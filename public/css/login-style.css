@@ -1,0 +1,35 @@
+.wrapper {
+    background-image: url('../image/bg1.jpg');
+    padding: 80px 120px;
+}
+
+.box1 {
+    background-color: #14213d;
+    border-radius: 20px;
+    height: 460px;
+    width: auto;
+}
+
+.img1 img {
+    height: 460px;
+    width: 520px;
+    border-top-right-radius: 20px;
+    border-end-end-radius: 20px;
+}
+
+.heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-box {
+    color: white;
+}
+
+.box2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
