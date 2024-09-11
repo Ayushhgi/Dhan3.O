@@ -1,50 +1,54 @@
-const express = require('express')
-const app = express()
-const mongoose = require('mongoose')
-const path = require('path')
-const checkUserAuth = require('./middleware/auth')
-const FrontContoller = require('./controllers/FrontContoller')
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const path = require("path");
+const web = require("./routes/web");
 
-
-
-main()
-  .then(() => {
-    console.log('connection successful')
+//connect flash and sessions
+const session = require("express-session");
+const flash = require("connect-flash");
+//messages
+app.use(
+  session({
+    secret: "secret",
+    cookie: { maxAge: 60000 },
+    resave: false,
+    saveUninitialized: false,
   })
-  .catch(err => {
-    console.log(err)
-  })
+);
+//Flash messages
+app.use(flash());
 
-async function main () {
-  await mongoose.connect('mongodb://127.0.0.1:27017/user')
-}
+//Database Connection
+const localUrl = "mongodb://127.0.0.1:27017/user";
+const connectDb = () => {
+  return mongoose
+    .connect(localUrl)
+    .then(() => {
+      console.log("Connected to MongoDB");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+connectDb();
 
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'ejs')
-app.use(express.static(path.join(__dirname, 'Public')))
-app.use(express.urlencoded({ extended: true }))
+// cookies
+const cookieparser = require("cookie-parser");
+app.use(cookieparser());
 
-app.get('/', (req, res) => {
-  console.log('Root route hit')
-  res.render('index.ejs')
-})
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+app.use(express.static("public"));
 
-app.get('/register', (req, res) => {
-    console.log('Root route hit')
-    res.render('register.ejs')
-  })
-  
+// Alternatively, you can use express's built-in body-parser
+app.use(express.urlencoded({ extended: true }));
 
-  app.get('/dashboard', checkUserAuth, (req, res) => {
-    console.log('Root route hit')
-    res.render('index.ejs')
-  })
+// Middleware for JSON data (in case you handle JSON)
+app.use(express.json());
 
-app.post('/userinsert', FrontContoller.userinsert)
-app.post('/verifyLogin', FrontContoller.verifyLogin)
-app.get('/logOut' , FrontContoller.logOut)
-
+app.use("/", web);
 
 app.listen(3000, () => {
-    console.log('app is listening')
-  })
+  console.log("App is listening");
+});
